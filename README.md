@@ -154,7 +154,7 @@ This is a lightweight starting point. Replace with your preferred stack.
 
 1. Clone
 
-git clone https://github.com/your-org/progress-tracker.git
+git clone https://github.com/Siddhartha-singh01/Milstonenenest
 cd progress-tracker
 
 2. Install (example Node)
