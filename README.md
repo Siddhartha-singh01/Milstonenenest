@@ -6,17 +6,17 @@ A modern, lightweight Progress Tracker that manages tasks, milestones, progress 
 ⸻
 
 Table of Contents
-	1.	Why this project?￼
-	2.	Key Features￼
-	3.	Quick demo — visuals & diagrams￼
-	4.	Project structure￼
-	5.	Milestones, tasks & dependencies — model & examples￼
-	6.	How to use (install & run)￼
-	7.	Progress visualization ideas & GitHub integration￼
-	8.	Issue / PR templates & workflows￼
-	9.	Contributor guide & code of conduct￼
-	10.	Roadmap & sample timeline￼
-	11.	License￼
+	1.	Why this project?
+	2.	Key Features
+	3.	Quick demo — visuals & diagrams
+	4.	Project structure
+	5.	Milestones, tasks & dependencies — model & examples
+	6.	How to use (install & run)
+	7.	Progress visualization ideas & GitHub integration
+	8.	Issue / PR templates & workflows
+	9.	Contributor guide & code of conduct
+	10.	Roadmap & sample timeline
+	11.	License
 
 ⸻
 
@@ -371,9 +371,3 @@ Final eye-candy — Copy-ready card (paste into README top)
 
 ⸻
 
-If you want, I can:
-	•	Generate ISSUE_TEMPLATE files and put them into a ready-to-commit branch.
-	•	Provide a small scripts/calc_progress.py that reads a local demo-data.json and updates badges in README.
-	•	Create a polished Mermaid dependency graph from your actual tasks (paste tasks here).
-
-Which of the above should I produce next?
