@@ -362,7 +362,7 @@ MIT © YourOrg. See LICENSE for details.
 
 Final eye-candy — Copy-ready card (paste into README top)
 
-<p align="center">
+<p align="center">      
   <img src="https://img.shields.io/badge/ProgressTracker-Ship%20Faster-blueviolet" alt="logo" />
   <h1 align="center">Progress Tracker</h1>
   <p align="center">Tasks • Milestones • Dependencies • Visuals 🚀</p>
