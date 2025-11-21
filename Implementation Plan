@@ -1,0 +1,90 @@
+Milestonenest Implementation Plan
+Goal Description
+Build a comprehensive project tracking system named "Milestonenest". The application will feature task management, milestone tracking, progress visualization (Gantt/Kanban), dependency management, and collaboration tools.
+
+User Review Required
+IMPORTANT
+
+I will be using Vite + React for this application as it requires complex state management and interactivity (Gantt charts, Drag-and-drop). I will use Vanilla CSS for styling to maintain full control and flexibility, as per the guidelines.
+
+Milestonenest Implementation Plan
+Goal Description
+Build a comprehensive project tracking system named "Milestonenest". The application will feature task management, milestone tracking, progress visualization (Gantt/Kanban), dependency management, and collaboration tools.
+
+User Review Required
+IMPORTANT
+
+I will be using Vite + React for this application as it requires complex state management and interactivity (Gantt charts, Drag-and-drop). I will use Vanilla CSS for styling to maintain full control and flexibility, as per the guidelines.
+
+Proposed Changes
+Project Initialization
+[NEW] 
+package.json
+Initialize a new Vite project with React template.
+Dependencies: react, react-dom, react-router-dom (for routing), date-fns (for date manipulation), recharts (for charts/visualization), dnd-kit or react-beautiful-dnd (for Kanban).
+Landing Page
+[NEW] 
+src/pages/LandingPage.jsx
+Hero section with "Get Started" CTA.
+Features section (Task Management, Milestones, Visualization).
+How it works section.
+Testimonials section.
+Responsive design with modern aesthetics.
+[MODIFY] 
+src/App.jsx
+Update root route / to show 
+LandingPage
+.
+Move 
+Dashboard
+ to /dashboard.
+Update redirects.
+[MODIFY] 
+src/pages/Login.jsx
+Update redirect after login to /dashboard.
+[MODIFY] 
+src/components/Layout.jsx
+Update Dashboard link to /dashboard.
+Landing Page Animations
+[MODIFY] 
+src/pages/LandingPage.jsx
+Integrate gsap and ScrollTrigger.
+Implement Hero section fade-out/move-up on scroll.
+Implement Section elements slide-away/fade-out on exit.
+Add scroll progress indicator.
+Enhance UI with glassmorphism.
+Premium Landing Page Redesign
+[MODIFY] 
+src/pages/LandingPage.jsx
+Aesthetics: "Handcrafted" feel, calm color palette, soft gradients. Remove "AI blobs".
+Typography: Refine font weights and spacing for a premium look.
+Layout: Asymmetrical/staggered layouts for features (breaking the grid).
+Animations: Refine GSAP triggers for subtle "slide-away" effects.
+Components:
+Hero: Minimal, bold headline, scroll cue.
+Features: Bento-grid or alternating layout.
+Testimonials: Clean, elegant cards.
+Footer: Minimalist.
+Testimonials Component Integration
+[NEW] 
+src/components/ui/testimonial-card.tsx
+[NEW] 
+src/components/blocks/testimonials-with-marquee.tsx
+[NEW] 
+src/components/ui/avatar.tsx
+Dependencies: Install tailwindcss, postcss, autoprefixer, @radix-ui/react-avatar.
+Configuration:
+Init Tailwind CSS.
+Create tsconfig.json for TypeScript support.
+Update tailwind.config.js with animations.
+Add Tailwind directives to 
+src/index.css
+ (or create src/styles/tailwind.css).
+Integration: Replace the static testimonials section in 
+LandingPage.jsx
+ with the new marquee component.
+Settings Pages
+Task Management: Create, edit, delete tasks. Verify updates reflect on the board.
+Milestones: Add milestones and link tasks. Check progress calculation.
+Visualization: Verify Gantt chart renders correctly based on task dates.
+Dependencies: specific test to ensure dependent tasks cannot be started/completed if dependencies are unmet (visual warning).
