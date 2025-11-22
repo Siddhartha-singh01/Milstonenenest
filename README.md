@@ -38,7 +38,7 @@ Key Features ✨
 	•	Issue & milestone templates to use with GitHub Issues.
 	•	Optional backend + CLI examples to automate status updates.
 
-⸻
+⸻                                  
 
 Quick demo — visuals & diagrams
 
