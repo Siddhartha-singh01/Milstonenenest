@@ -1,373 +1,276 @@
-# Milstonenenest
-Progress Tracker — Milestones & Dependencies 🚀📊
+# Milestonenest Backend
 
-A modern, lightweight Progress Tracker that manages tasks, milestones, progress visualization, and task dependencies — built to help teams and solo creators ship with clarity.
+Complete backend system for Milestonenest project management application.
 
-⸻
+## Technology Stack
 
-Table of Contents
-	1.	Why this project?
-	2.	Key Features
-	3.	Quick demo — visuals & diagrams
-	4.	Project structure
-	5.	Milestones, tasks & dependencies — model & examples
-	6.	How to use (install & run)
-	7.	Progress visualization ideas & GitHub integration
-	8.	Issue / PR templates & workflows
-	9.	Contributor guide & code of conduct
-	10.	Roadmap & sample timeline
-	11.	License
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Real-time**: Socket.io for WebSocket
+- **Authentication**: JWT (JSON Web Tokens)
+- **File Upload**: Multer (local) + AWS S3 ready
+- **Validation**: express-validator
+- **Security**: helmet, cors, bcrypt
+- **Logging**: winston
 
-⸻
+## Project Structure
 
-Why this project?
+```
+backend/
+├── src/
+│   ├── config/
+│   │   ├── database.js
+│   │   ├── socket.js
+│   │   └── storage.js
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Project.js
+│   │   ├── Task.js
+│   │   ├── Milestone.js
+│   │   └── File.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── projectController.js
+│   │   ├── taskController.js
+│   │   ├── milestoneController.js
+│   │   ├── analyticsController.js
+│   │   └── fileController.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── projects.js
+│   │   ├── tasks.js
+│   │   ├── milestones.js
+│   │   ├── analytics.js
+│   │   └── files.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   ├── validation.js
+│   │   ├── errorHandler.js
+│   │   └── upload.js
+│   ├── services/
+│   │   ├── authService.js
+│   │   ├── taskService.js
+│   │   ├── milestoneService.js
+│   │   └── fileService.js
+│   ├── utils/
+│   │   ├── logger.js
+│   │   └── helpers.js
+│   ├── socket/
+│   │   └── handlers.js
+│   └── server.js
+├── uploads/
+├── .env.example
+├── .gitignore
+├── package.json
+└── README.md
+```
 
-Managing tasks is easy. Understanding which tasks block others, which milestone is slipping, and visualizing progress — less so. This repo provides:
-	•	Clear milestone definitions.
-	•	Task-level dependencies and status tracking.
-	•	Built-in visualizations (Mermaid graphs, Gantt charts).
-	•	Templates so teams can adopt fast.
+## Quick Start
 
-⸻
+```bash
+# Navigate to backend directory
+cd backend
 
-Key Features ✨
-	•	Tasks with statuses: todo, in-progress, blocked, done, archived.
-	•	Milestones grouping tasks, with completion % computed from weighted tasks.
-	•	Dependency graph to quickly identify blockers.
-	•	Visual progress bars and Mermaid diagrams for GitHub rendering.
-	•	Issue & milestone templates to use with GitHub Issues.
-	•	Optional backend + CLI examples to automate status updates.
-
-⸻                                  
-
-Quick demo — visuals & diagrams
-
-Progress bar (example)
-
-Milestone: MVP — 63% complete
-
-[███████████░░░░░░░░░] 63%
-
-Mermaid — Dependency graph
-
-flowchart TD
-  A[Design] --> B[API]
-  B --> C[Frontend]
-  B --> D[Background Worker]
-  C --> E[Integration Tests]
-  D --> E
-  style A fill:#f9f,stroke:#333,stroke-width:1px
-  style E fill:#cff,stroke:#333,stroke-width:1px
-
-Mermaid — Gantt (timeline)
-
-gantt
-  dateFormat  YYYY-MM-DD
-  title Project Roadmap
-  section Planning
-    Kickoff          :a1, 2025-11-20, 3d
-    Requirements     :a2, after a1, 5d
-  section Implementation
-    Backend          :b1, 2025-11-30, 14d
-    Frontend         :b2, after b1, 10d
-  section QA
-    Tests            :c1, after b2, 7d
-    Release Prep     :c2, after c1, 3d
-
-You can copy-paste these Mermaid blocks into your GitHub README and they will render on GitHub automatically.
-
-⸻
-
-Project structure (suggested)
-
-progress-tracker/
-├─ README.md
-├─ docs/
-│  ├─ tasks.md
-│  ├─ milestones.md
-│  └─ diagrams.md
-├─ server/
-│  ├─ src/
-│  └─ migrations/
-├─ client/
-│  └─ src/
-├─ .github/
-│  ├─ ISSUE_TEMPLATE/
-│  └─ workflows/
-├─ examples/
-│  └─ demo-data.json
-└─ LICENSE
-
-
-⸻
-
-Milestones, tasks & dependencies — model & examples
-
-Data model (JSON)
-
-{
-  "milestone_id": "ms-001",
-  "title": "MVP v1",
-  "due_date": "2025-12-15",
-  "tasks": [
-    {
-      "task_id": "t-001",
-      "title": "Auth backend",
-      "status": "done",
-      "assignee": "alice",
-      "estimate_hours": 16,
-      "dependencies": []
-    },
-    {
-      "task_id": "t-002",
-      "title": "Auth frontend",
-      "status": "in-progress",
-      "assignee": "bob",
-      "estimate_hours": 10,
-      "dependencies": ["t-001"]
-    }
-  ]
-}
-
-Task fields explained
-	•	task_id: unique ID (e.g., t-001)
-	•	title: short description
-	•	status: todo | in-progress | blocked | done | archived
-	•	assignee: person or team
-	•	estimate_hours: size estimate
-	•	dependencies: array of task_id strings (tasks that must complete first)
-	•	weight (optional): importance/weight for milestone percent calculation
-
-Example: Compute milestone progress (pseudocode)
-
-def milestone_progress(tasks):
-    done_weight = sum(t.weight for t in tasks if t.status == 'done')
-    total_weight = sum(t.weight for t in tasks)
-    return (done_weight / total_weight) * 100
-
-
-⸻
-
-How to use (install & run) — minimal example (Node + SQLite)
-
-This is a lightweight starting point. Replace with your preferred stack.
-
-1. Clone
-
-git clone https://github.com/Siddhartha-singh01/Milstonenenest
-cd progress-tracker
-
-2. Install (example Node)
-
-cd server
+# Install dependencies
 npm install
-npm run migrate   # create sqlite db & tables
-npm start         # run API server
 
-3. Seed demo data
+# Copy environment variables
+cp .env.example .env
 
-curl -X POST http://localhost:4000/seed-demo
+# Edit .env with your configuration
+# Start MongoDB locally or use MongoDB Atlas
 
-4. Open client (React)
+# Run development server
+npm run dev
 
-cd client
-npm install
+# Run production server
 npm start
-# visit http://localhost:3000
+```
 
+## Environment Variables
 
-⸻
+```env
+# Server
+PORT=5000
+NODE_ENV=development
 
-Progress visualization ideas & GitHub integration
+# Database
+MONGODB_URI=mongodb://localhost:27017/milestonenest
 
-1) Status badges (auto-update)
-	•	Use GitHub Actions to calculate milestone completion and write to README badges using shields.io dynamic badges or repo README update.
+# JWT
+JWT_SECRET=your-super-secret-jwt-key-change-this
+JWT_EXPIRE=7d
 
-Badge example:
+# CORS
+FRONTEND_URL=http://localhost:5173
 
-![MVP Progress](https://img.shields.io/badge/MVP-63%25-yellowgreen)
+# File Upload
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=10485760
 
-2) Auto-create milestones from GitHub Issues
-	•	Use GitHub Actions to tag issues with task: labels and compute milestone %.
+# AWS S3 (Optional)
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_BUCKET_NAME=milestonenest-files
+AWS_REGION=us-east-1
+USE_S3=false
+```
 
-3) Kanban & Burndown
-	•	Provide a Kanban board view (columns: Todo, In-Progress, Blocked, Done).
-	•	Generate a daily burndown chart from completed estimate_hours.
+## API Endpoints
 
-⸻
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+- `GET /api/auth/me` - Get current user
+- `PUT /api/auth/update` - Update user profile
 
-Issue & PR templates (put under .github/ISSUE_TEMPLATE/)
+### Projects
+- `GET /api/projects` - Get all user projects
+- `POST /api/projects` - Create new project
+- `GET /api/projects/:id` - Get project by ID
+- `PUT /api/projects/:id` - Update project
+- `DELETE /api/projects/:id` - Delete project
 
-task-feature.md
+### Tasks
+- `GET /api/tasks` - Get all tasks (with filters)
+- `POST /api/tasks` - Create new task
+- `GET /api/tasks/:id` - Get task by ID
+- `PUT /api/tasks/:id` - Update task
+- `DELETE /api/tasks/:id` - Delete task
+- `PATCH /api/tasks/:id/status` - Update task status
+- `PATCH /api/tasks/:id/move` - Move task (Kanban)
 
----
-name: Task / Feature
-about: Create a task that can be tracked as part of a milestone
-title: "[TASK] "
-labels: ["task"]
-assignees: []
----
-### Description
-<!-- What should be done -->
+### Milestones
+- `GET /api/milestones` - Get all milestones
+- `POST /api/milestones` - Create new milestone
+- `GET /api/milestones/:id` - Get milestone by ID
+- `PUT /api/milestones/:id` - Update milestone
+- `DELETE /api/milestones/:id` - Delete milestone
+- `PATCH /api/milestones/:id/complete` - Mark milestone complete
+
+### Analytics
+- `GET /api/analytics/overview` - Get dashboard overview
+- `GET /api/analytics/tasks` - Get task analytics
+- `GET /api/analytics/milestones` - Get milestone analytics
+- `GET /api/analytics/velocity` - Get team velocity
+
+### Files
+- `POST /api/files/upload` - Upload file
+- `GET /api/files/:id` - Get file by ID
+- `DELETE /api/files/:id` - Delete file
+- `GET /api/files/task/:taskId` - Get files for task
+
+## WebSocket Events
+
+### Client → Server
+- `join:project` - Join project room
+- `leave:project` - Leave project room
+- `task:update` - Update task
+- `task:move` - Move task in Kanban
+- `milestone:update` - Update milestone
+
+### Server → Client
+- `task:created` - New task created
+- `task:updated` - Task updated
+- `task:deleted` - Task deleted
+- `task:moved` - Task moved
+- `milestone:created` - New milestone created
+- `milestone:updated` - Milestone updated
+- `milestone:deleted` - Milestone deleted
+- `user:joined` - User joined project
+- `user:left` - User left project
+
+## Features
+
+✅ JWT Authentication
+✅ Real-time updates via WebSocket
+✅ File uploads (local + S3 ready)
+✅ Auto-save support
+✅ Multi-user collaboration
+✅ Full CRUD operations
+✅ Request validation
+✅ Error handling
+✅ Logging & monitoring
+✅ CORS enabled
+✅ Security headers
+✅ Rate limiting
+✅ Database indexing
+
+## Database Models
+
+### User
+- email, password, name, avatar
+- projects (references)
+- createdAt, updatedAt
+
+### Project
+- name, description, color
+- owner (User reference)
+- members (User references)
+- createdAt, updatedAt
+
+### Task
+- title, description, status, priority
+- project (Project reference)
+- assignee (User reference)
+- dueDate, tags, position
+- createdAt, updatedAt
 
 ### Milestone
-<!-- e.g. MVP v1 -->
+- title, description, status
+- project (Project reference)
+- dueDate, progress, tasks
+- createdAt, updatedAt
 
-### Estimated hours
-<!-- e.g. 8 -->
+### File
+- filename, originalName, mimetype, size
+- path, url
+- task (Task reference)
+- uploadedBy (User reference)
+- createdAt
 
-### Dependencies
-<!-- list task IDs -->
+## Security Features
 
-bug.md
+- Password hashing with bcrypt
+- JWT token authentication
+- HTTP security headers (helmet)
+- CORS configuration
+- Request validation
+- Rate limiting
+- File upload restrictions
+- XSS protection
 
----
-name: Bug Report
-about: Report a bug
-labels: ["bug"]
----
-*Describe the bug*
-<!-- Steps to reproduce -->
+## Deployment
 
-*Expected behavior*
+### Development
+```bash
+npm run dev
+```
 
+### Production
+```bash
+npm start
+```
 
-⸻
+### Docker (Optional)
+```bash
+docker-compose up -d
+```
 
-GitHub Actions (workflow snippet) — compute progress daily
+## Testing
 
-name: Update Milestone Progress
-on:
-  schedule:
-    - cron: '0 2 * * *' # daily at 02:00 UTC
-jobs:
-  calc-progress:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run progress script
-        run: |
-          python3 scripts/calc_progress.py --output README.md
-      - name: Commit README
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "chore: update milestone progress [skip ci]" || echo "no changes"
-          git push
+```bash
+# Run tests
+npm test
 
-scripts/calc_progress.py would read issues/milestones via GitHub API and update badges/percentages.
+# Run tests with coverage
+npm run test:coverage
+```
 
-⸻
+## License
 
-Example CLI commands
+MIT
 
-# create task
-pt create-task --title "Integration tests" --estimate 12 --milestone "MVP v1"
-
-# mark dependency
-pt add-dep --task t-005 --depends-on t-003
-
-# show dependency graph (ASCII)
-pt graph --milestone "MVP v1"
-
-# export Gantt
-pt export-gantt --milestone "MVP v1" --format mermaid > roadmap.md
-
-
-⸻
-
-Roadmap & sample timeline
-	•	Phase 1 — Core (2 weeks)
-	•	Task model, milestone model, dependency constraints
-	•	Basic API endpoints
-	•	Phase 2 — UI (2 weeks)
-	•	Kanban, dependency graph, simple charts
-	•	Phase 3 — Integrations (2 weeks)
-	•	GitHub Issues import/export, badges, auto progress
-	•	Phase 4 — Advanced (ongoing)
-	•	Role-based permissions, analytics, calendar sync, Slack notifications
-
-⸻
-
-Templates — Milestone example (YAML)
-
-milestone_id: ms-002
-title: "Beta Release"
-due_date: "2026-01-15"
-tasks:
-  - task_id: t-010; title: "Performance tests"; estimate: 20; weight: 2; status: todo
-  - task_id: t-011; title: "UI polish"; estimate: 10; weight: 1; status: todo
-
-
-⸻
-
-Database schema (simple)
-
-CREATE TABLE milestones (
-  id TEXT PRIMARY KEY,
-  title TEXT,
-  due_date TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE tasks (
-  id TEXT PRIMARY KEY,
-  milestone_id TEXT REFERENCES milestones(id),
-  title TEXT,
-  status TEXT,
-  assignee TEXT,
-  estimate_hours INTEGER,
-  weight INTEGER DEFAULT 1,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE dependencies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  task_id TEXT REFERENCES tasks(id),
-  depends_on_task_id TEXT REFERENCES tasks(id)
-);
-
-
-⸻
-
-UX tips (to make it delightful)
-	•	Show dependency highlights: when hovering a task, highlight its ancestor & descendant chain.
-	•	When a blocking task is delayed, mark dependent tasks as at-risk visually.
-	•	Let users mark tasks as unblocked with a one-click action and notify assignees.
-	•	Use subtle animations for progress increase (not too flashy).
-
-⸻
-
-Contributors ✨
-
-Want to help? Fork, add an issue or a feature, and send a PR. Some good first issues:
-	•	Add a drag-and-drop Kanban UI
-	•	Implement pt graph CLI (ASCII / DOT output)
-	•	Add unit tests for progress calculations
-
-⸻
-
-Code of Conduct
-
-Be kind. Be helpful. No harassment. See CODE_OF_CONDUCT.md.
-
-⸻
-
-License
-
-MIT © YourOrg. See LICENSE for details.
-
-⸻
-
-Final eye-candy — Copy-ready card (paste into README top)
-
-<p align="center">      
-  <img src="https://img.shields.io/badge/ProgressTracker-Ship%20Faster-blueviolet" alt="logo" />
-  <h1 align="center">Progress Tracker</h1>
-  <p align="center">Tasks • Milestones • Dependencies • Visuals 🚀</p>
-</p>
-
-
-⸻
 
