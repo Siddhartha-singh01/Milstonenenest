@@ -151,6 +151,7 @@ export const authService = {
 };
 ```
 
+
 ### Update AuthContext
 
 Update `src/context/AuthContext.jsx`:
