@@ -1,1 +1,101 @@
+# Frontend Integration Guide
+
+Complete guide for integrating the Milestonenest backend API with your React frontend.
+
+## Table of Contents
+
+1. [Setup](#setup)
+2. [Authentication](#authentication)
+3. [API Client](#api-client)
+4. [WebSocket Integration](#websocket-integration)
+5. [Component Examples](#component-examples)
+6. [Auto-Save Implementation](#auto-save-implementation)
+
+---
+
+## Setup
+
+### Install Dependencies
+
+bash
+npm install axios socket.io-client
+
+
+### Environment Variables
+
+Create .env file in frontend root:
+
+env
+VITE_API_URL=http://localhost:5000/api
+VITE_SOCKET_URL=http://localhost:5000
+
+
+---
+
+## Authentication
+
+### API Client Setup
+
+Create src/services/api.js:
+
+javascript
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Create axios instance
+const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+
+// Add token to requests
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// Handle response errors
+api.interceptors.response.use(
+    (response) => response.data,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+        return Promise.reject(error.response?.data || error.message);
+    }
+);
+
+export default api;
+
+
+### Auth Service
+
+Create src/services/authService.js:
+
+javascript
+import api from './api';
+
+export const authService = {
+    // Register new user
+    async register(name, email, password) {
+        const response = await api.post('/auth/register', {
+            name,
+            email,
+            password
+        });
+        
+        if (response.success && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
 
