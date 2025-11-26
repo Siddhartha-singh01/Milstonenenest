@@ -99,3 +99,401 @@ export const authService = {
             localStorage.setItem('user', JSON.stringify(response.data.user));
         }
 
+        
+        return response.data;
+    },
+
+    // Login user
+    async login(email, password) {
+        const response = await api.post('/auth/login', {
+            email,
+            password
+        });
+        
+        if (response.success && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        
+        return response.data;
+    },
+
+    // Get current user
+    async getCurrentUser() {
+        const response = await api.get('/auth/me');
+        return response.data;
+    },
+
+    // Update profile
+    async updateProfile(data) {
+        const response = await api.put('/auth/update', data);
+        if (response.success) {
+            localStorage.setItem('user', JSON.stringify(response.data));
+        }
+        return response.data;
+    },
+
+    // Logout
+    logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    },
+
+    // Get token
+    getToken() {
+        return localStorage.getItem('token');
+    },
+
+    // Check if authenticated
+    isAuthenticated() {
+        return !!localStorage.getItem('token');
+    }
+};
+
+
+### Update AuthContext
+
+Update src/context/AuthContext.jsx:
+
+javascript
+import { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../services/authService';
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Check if user is logged in
+        const token = authService.getToken();
+        const savedUser = localStorage.getItem('user');
+        
+        if (token && savedUser) {
+            setUser(JSON.parse(savedUser));
+            setIsAuthenticated(true);
+        }
+        
+        setLoading(false);
+    }, []);
+
+    const login = async (email, password) => {
+        const data = await authService.login(email, password);
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return data;
+    };
+
+    const register = async (name, email, password) => {
+        const data = await authService.register(name, email, password);
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return data;
+    };
+
+    const logout = () => {
+        authService.logout();
+        setUser(null);
+        setIsAuthenticated(false);
+    };
+
+    return (
+        <AuthContext.Provider value={{
+            user,
+            isAuthenticated,
+            loading,
+            login,
+            register,
+            logout
+        }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export const useAuth = () => useContext(AuthContext);
+
+
+---
+
+## API Services
+
+### Project Service
+
+Create src/services/projectService.js:
+
+javascript
+import api from './api';
+
+export const projectService = {
+    // Get all projects
+    async getProjects() {
+        const response = await api.get('/projects');
+        return response.data;
+    },
+
+    // Get single project
+    async getProject(id) {
+        const response = await api.get(`/projects/${id}`);
+        return response.data;
+    },
+
+    // Create project
+    async createProject(data) {
+        const response = await api.post('/projects', data);
+        return response.data;
+    },
+
+    // Update project
+    async updateProject(id, data) {
+        const response = await api.put(`/projects/${id}`, data);
+        return response.data;
+    },
+
+    // Delete project
+    async deleteProject(id) {
+        const response = await api.delete(`/projects/${id}`);
+        return response.data;
+    }
+};
+
+// Example usage in component:
+/*
+import { projectService } from '../services/projectService';
+
+const MyComponent = () => {
+    const [projects, setProjects] = useState([]);
+
+    useEffect(() => {
+        loadProjects();
+    }, []);
+
+    const loadProjects = async () => {
+        try {
+            const data = await projectService.getProjects();
+            setProjects(data);
+        } catch (error) {
+            console.error('Error loading projects:', error);
+        }
+    };
+
+    const handleCreateProject = async (projectData) => {
+        try {
+            const newProject = await projectService.createProject(projectData);
+            setProjects([...projects, newProject]);
+        } catch (error) {
+            console.error('Error creating project:', error);
+        }
+    };
+
+    return (
+        // Your JSX
+    );
+};
+*/
+
+
+### Task Service
+
+Create src/services/taskService.js:
+
+javascript
+import api from './api';
+
+export const taskService = {
+    // Get all tasks with filters
+    async getTasks(filters = {}) {
+        const params = new URLSearchParams(filters);
+        const response = await api.get(`/tasks?${params}`);
+        return response.data;
+    },
+
+    // Get single task
+    async getTask(id) {
+        const response = await api.get(`/tasks/${id}`);
+        return response.data;
+    },
+
+    // Create task
+    async createTask(data) {
+        const response = await api.post('/tasks', data);
+        return response.data;
+    },
+
+    // Update task
+    async updateTask(id, data) {
+        const response = await api.put(`/tasks/${id}`, data);
+        return response.data;
+    },
+
+    // Update task status
+    async updateTaskStatus(id, status) {
+        const response = await api.patch(`/tasks/${id}/status`, { status });
+        return response.data;
+    },
+
+    // Move task (Kanban)
+    async moveTask(id, status, position) {
+        const response = await api.patch(`/tasks/${id}/move`, { status, position });
+        return response.data;
+    },
+
+    // Delete task
+    async deleteTask(id) {
+        const response = await api.delete(`/tasks/${id}`);
+        return response.data;
+    }
+};
+
+// Example Kanban usage:
+/*
+const KanbanBoard = () => {
+    const [tasks, setTasks] = useState({
+        todo: [],
+        'in-progress': [],
+        review: [],
+        done: []
+    });
+
+    const handleDragEnd = async (result) => {
+        const { draggableId, source, destination } = result;
+        
+        if (!destination) return;
+        
+        const taskId = draggableId;
+        const newStatus = destination.droppableId;
+        const newPosition = destination.index;
+
+        try {
+            await taskService.moveTask(taskId, newStatus, newPosition);
+            // Update local state
+            // ...
+        } catch (error) {
+            console.error('Error moving task:', error);
+        }
+    };
+
+    return (
+        <DragDropContext onDragEnd={handleDragEnd}>
+            {// Your Kanban columns}
+        </DragDropContext>
+    );
+};
+*/
+
+
+### Milestone Service
+
+Create src/services/milestoneService.js:
+
+javascript
+import api from './api';
+
+export const milestoneService = {
+    // Get all milestones
+    async getMilestones(filters = {}) {
+        const params = new URLSearchParams(filters);
+        const response = await api.get(`/milestones?${params}`);
+        return response.data;
+    },
+
+    // Get single milestone
+    async getMilestone(id) {
+        const response = await api.get(`/milestones/${id}`);
+        return response.data;
+    },
+
+    // Create milestone
+    async createMilestone(data) {
+        const response = await api.post('/milestones', data);
+        return response.data;
+    },
+
+    // Update milestone
+    async updateMilestone(id, data) {
+        const response = await api.put(`/milestones/${id}`, data);
+        return response.data;
+    },
+
+    // Mark milestone as complete
+    async completeMilestone(id) {
+        const response = await api.patch(`/milestones/${id}/complete`);
+        return response.data;
+    },
+
+    // Delete milestone
+    async deleteMilestone(id) {
+        const response = await api.delete(`/milestones/${id}`);
+        return response.data;
+    }
+};
+
+
+### Analytics Service
+
+Create src/services/analyticsService.js:
+
+javascript
+import api from './api';
+
+export const analyticsService = {
+    // Get dashboard overview
+    async getOverview(projectId = null) {
+        const params = projectId ? `?projectId=${projectId}` : '';
+        const response = await api.get(`/analytics/overview${params}`);
+        return response.data;
+    },
+
+    // Get task analytics
+    async getTaskAnalytics(projectId = null) {
+        const params = projectId ? `?projectId=${projectId}` : '';
+        const response = await api.get(`/analytics/tasks${params}`);
+        return response.data;
+    },
+
+    // Get milestone analytics
+    async getMilestoneAnalytics(projectId = null) {
+        const params = projectId ? `?projectId=${projectId}` : '';
+        const response = await api.get(`/analytics/milestones${params}`);
+        return response.data;
+    },
+
+    // Get team velocity
+    async getVelocity(projectId = null) {
+        const params = projectId ? `?projectId=${projectId}` : '';
+        const response = await api.get(`/analytics/velocity${params}`);
+        return response.data;
+    }
+};
+
+// Example Dashboard usage:
+/*
+const Dashboard = () => {
+    const [analytics, setAnalytics] = useState(null);
+
+    useEffect(() => {
+        loadAnalytics();
+    }, []);
+
+    const loadAnalytics = async () => {
+        try {
+            const data = await analyticsService.getOverview();
+            setAnalytics(data);
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+        }
+    };
+
+    return (
+        <div>
+            <h2>Dashboard Overview</h2>
+            <div>Total Tasks: {analytics?.tasks.total}</div>
+            <div>Completed: {analytics?.tasks.completed}</div>
+            <div>Completion Rate: {analytics?.tasks.completionRate}%</div>
+        </div>
+    );
+};
+*/
