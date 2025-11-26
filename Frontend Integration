@@ -497,3 +497,508 @@ const Dashboard = () => {
     );
 };
 */
+
+
+### File Service
+
+Create src/services/fileService.js:
+
+javascript
+import api from './api';
+
+export const fileService = {
+    // Upload file
+    async uploadFile(file, taskId = null, projectId = null) {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (taskId) formData.append('taskId', taskId);
+        if (projectId) formData.append('projectId', projectId);
+
+        const response = await api.post('/files/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    },
+
+    // Get file
+    async getFile(id) {
+        const response = await api.get(`/files/${id}`);
+        return response.data;
+    },
+
+    // Get task files
+    async getTaskFiles(taskId) {
+        const response = await api.get(`/files/task/${taskId}`);
+        return response.data;
+    },
+
+    // Delete file
+    async deleteFile(id) {
+        const response = await api.delete(`/files/${id}`);
+        return response.data;
+    }
+};
+
+// Example file upload component:
+/*
+const FileUpload = ({ taskId }) => {
+    const [uploading, setUploading] = useState(false);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const uploadedFile = await fileService.uploadFile(file, taskId);
+            console.log('File uploaded:', uploadedFile);
+        } catch (error) {
+            console.error('Upload error:', error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    return (
+        <div>
+            <input
+                type="file"
+                onChange={handleFileChange}
+                disabled={uploading}
+            />
+            {uploading && <p>Uploading...</p>}
+        </div>
+    );
+};
+*/
+
+
+---
+
+## WebSocket Integration
+
+### Socket Service
+
+Create src/services/socketService.js:
+
+javascript
+import { io } from 'socket.io-client';
+import { authService } from './authService';
+
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+
+class SocketService {
+    constructor() {
+        this.socket = null;
+        this.listeners = new Map();
+    }
+
+    connect() {
+        const token = authService.getToken();
+        
+        if (!token) {
+            console.error('No token found, cannot connect to socket');
+            return;
+        }
+
+        this.socket = io(SOCKET_URL, {
+            auth: { token }
+        });
+
+        this.socket.on('connect', () => {
+            console.log('Socket connected');
+        });
+
+        this.socket.on('disconnect', () => {
+            console.log('Socket disconnected');
+        });
+
+        this.socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+        });
+
+        return this.socket;
+    }
+
+    disconnect() {
+        if (this.socket) {
+            this.socket.disconnect();
+            this.socket = null;
+        }
+    }
+
+    // Join project room
+    joinProject(projectId) {
+        if (this.socket) {
+            this.socket.emit('join:project', projectId);
+        }
+    }
+
+    // Leave project room
+    leaveProject(projectId) {
+        if (this.socket) {
+            this.socket.emit('leave:project', projectId);
+        }
+    }
+
+    // Listen to events
+    on(event, callback) {
+        if (this.socket) {
+            this.socket.on(event, callback);
+            
+            // Store listener for cleanup
+            if (!this.listeners.has(event)) {
+                this.listeners.set(event, []);
+            }
+            this.listeners.get(event).push(callback);
+        }
+    }
+
+    // Remove event listener
+    off(event, callback) {
+        if (this.socket) {
+            this.socket.off(event, callback);
+        }
+    }
+
+    // Emit events
+    emit(event, data) {
+        if (this.socket) {
+            this.socket.emit(event, data);
+        }
+    }
+
+    // Clean up all listeners
+    removeAllListeners() {
+        if (this.socket) {
+            this.listeners.forEach((callbacks, event) => {
+                callbacks.forEach(callback => {
+                    this.socket.off(event, callback);
+                });
+            });
+            this.listeners.clear();
+        }
+    }
+}
+
+export const socketService = new SocketService();
+
+
+### Socket Context
+
+Create src/context/SocketContext.jsx:
+
+javascript
+import { createContext, useContext, useEffect } from 'react';
+import { socketService } from '../services/socketService';
+import { useAuth } from './AuthContext';
+
+const SocketContext = createContext();
+
+export const SocketProvider = ({ children }) => {
+    const { isAuthenticated } = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            socketService.connect();
+        }
+
+        return () => {
+            socketService.disconnect();
+        };
+    }, [isAuthenticated]);
+
+    return (
+        <SocketContext.Provider value={{ socketService }}>
+            {children}
+        </SocketContext.Provider>
+    );
+};
+
+export const useSocket = () => useContext(SocketContext);
+
+
+### Real-time Task Updates Example
+
+javascript
+import { useEffect, useState } from 'react';
+import { useSocket } from '../context/SocketContext';
+import { taskService } from '../services/taskService';
+
+const TaskList = ({ projectId }) => {
+    const [tasks, setTasks] = useState([]);
+    const { socketService } = useSocket();
+
+    useEffect(() => {
+        // Load initial tasks
+        loadTasks();
+
+        // Join project room
+        socketService.joinProject(projectId);
+
+        // Listen for real-time updates
+        socketService.on('task:created', handleTaskCreated);
+        socketService.on('task:updated', handleTaskUpdated);
+        socketService.on('task:deleted', handleTaskDeleted);
+        socketService.on('task:moved', handleTaskMoved);
+
+        return () => {
+            // Cleanup
+            socketService.leaveProject(projectId);
+            socketService.off('task:created', handleTaskCreated);
+            socketService.off('task:updated', handleTaskUpdated);
+            socketService.off('task:deleted', handleTaskDeleted);
+            socketService.off('task:moved', handleTaskMoved);
+        };
+    }, [projectId]);
+
+    const loadTasks = async () => {
+        try {
+            const data = await taskService.getTasks({ project: projectId });
+            setTasks(data.tasks);
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+        }
+    };
+
+    const handleTaskCreated = (task) => {
+        setTasks(prev => [...prev, task]);
+    };
+
+    const handleTaskUpdated = (task) => {
+        setTasks(prev => prev.map(t => t._id === task._id ? task : t));
+    };
+
+    const handleTaskDeleted = ({ id }) => {
+        setTasks(prev => prev.filter(t => t._id !== id));
+    };
+
+    const handleTaskMoved = (task) => {
+        setTasks(prev => prev.map(t => t._id === task._id ? task : t));
+    };
+
+    return (
+        <div>
+            {tasks.map(task => (
+                <div key={task._id}>{task.title}</div>
+            ))}
+        </div>
+    );
+};
+
+
+---
+
+## Auto-Save Implementation
+
+### Debounced Auto-Save Hook
+
+Create src/hooks/useAutoSave.js:
+
+javascript
+import { useEffect, useRef, useCallback } from 'react';
+
+export const useAutoSave = (data, saveFunction, delay = 1000) => {
+    const timeoutRef = useRef(null);
+    const previousDataRef = useRef(data);
+
+    const save = useCallback(async () => {
+        try {
+            await saveFunction(data);
+            console.log('Auto-saved successfully');
+        } catch (error) {
+            console.error('Auto-save failed:', error);
+        }
+    }, [data, saveFunction]);
+
+    useEffect(() => {
+        // Don't save on initial render
+        if (JSON.stringify(previousDataRef.current) === JSON.stringify(data)) {
+            return;
+        }
+
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => {
+            save();
+        }, delay);
+
+        // Update previous data
+        previousDataRef.current = data;
+
+        // Cleanup
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [data, save, delay]);
+};
+
+// Example usage:
+/*
+const TaskEditor = ({ taskId }) => {
+    const [taskData, setTaskData] = useState({
+        title: '',
+        description: ''
+    });
+
+    const saveTask = async (data) => {
+        await taskService.updateTask(taskId, data);
+    };
+
+    // Auto-save after 1 second of inactivity
+    useAutoSave(taskData, saveTask, 1000);
+
+    return (
+        <div>
+            <input
+                value={taskData.title}
+                onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
+            />
+            <textarea
+                value={taskData.description}
+                onChange={(e) => setTaskData({ ...taskData, description: e.target.value })}
+            />
+        </div>
+    );
+};
+*/
+
+
+---
+
+## Complete Integration Example
+
+### Update main.jsx
+
+javascript
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import './styles/global.css';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+        <AuthProvider>
+            <SocketProvider>
+                <App />
+            </SocketProvider>
+        </AuthProvider>
+    </React.StrictMode>
+);
+
+
+---
+
+## API Response Examples
+
+### Success Response
+json
+{
+    "success": true,
+    "message": "Operation successful",
+    "data": {
+        // Response data
+    }
+}
+
+
+### Error Response
+json
+{
+    "success": false,
+    "error": "Error message",
+    "statusCode": 400
+}
+
+
+### Paginated Response
+json
+{
+    "success": true,
+    "data": {
+        "tasks": [...],
+        "pagination": {
+            "total": 50,
+            "page": 1,
+            "limit": 10,
+            "pages": 5
+        }
+    }
+}
+
+
+---
+
+## Testing the Backend
+
+### Using cURL
+
+bash
+# Register
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
+
+# Login
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"john@example.com","password":"password123"}'
+
+# Get projects (with token)
+curl -X GET http://localhost:5000/api/projects \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+
+
+### Using Postman
+
+1. Import the API endpoints
+2. Set up environment variables for token
+3. Test each endpoint with sample data
+
+---
+
+## Next Steps
+
+1. *Install backend dependencies*: cd backend && npm install
+2. *Configure environment*: Copy .env.example to .env and update values
+3. *Start MongoDB*: Ensure MongoDB is running
+4. *Start backend*: npm run dev
+5. *Integrate frontend*: Follow the examples above
+6. *Test real-time features*: Open multiple browser tabs to see live updates
+
+---
+
+## Troubleshooting
+
+### CORS Issues
+- Ensure FRONTEND_URL in backend .env matches your frontend URL
+- Check CORS configuration in server.js
+
+### Socket Connection Fails
+- Verify token is being sent in socket auth
+- Check browser console for connection errors
+- Ensure backend WebSocket server is running
+
+### File Upload Issues
+- Check file size limits in .env
+- Verify upload directory exists and has write permissions
+- Check file type restrictions in storage.js
+
+---
+
+## Support
+
+For issues or questions:
+- Check backend logs: backend/combined.log or backend/error.log
+- Enable debug logging: Set NODE_ENV=development in .env
+- Review API responses in browser Network tab
