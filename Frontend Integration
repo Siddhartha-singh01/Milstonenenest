@@ -144,7 +144,7 @@ export const authService = {
         return localStorage.getItem('token');
     },
 
-    // Check if authenticated
+    // Check if authenticated or not
     isAuthenticated() {
         return !!localStorage.getItem('token');
     }
