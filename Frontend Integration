@@ -29,7 +29,6 @@ env
 VITE_API_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
 
-
 ---
 
 ## Authentication
@@ -218,7 +217,6 @@ export const useAuth = () => useContext(AuthContext);
 
 
 ---
-
 ## API Services
 
 ### Project Service
@@ -234,7 +232,6 @@ export const projectService = {
         const response = await api.get('/projects');
         return response.data;
     },
-
     // Get single project
     async getProject(id) {
         const response = await api.get(`/projects/${id}`);
@@ -990,14 +987,12 @@ curl -X GET http://localhost:5000/api/projects \
 - Ensure backend WebSocket server is running
 
 ### File Upload Issues
-- Check file size limits in .env
+- Check the file size limits in .env
 - Verify upload directory exists and has write permissions
 - Check file type restrictions in storage.js
 
 ---
-
 ## Support
-
 For issues or questions:
 - Check backend logs: backend/combined.log or backend/error.log
 - Enable debug logging: Set NODE_ENV=development in .env
