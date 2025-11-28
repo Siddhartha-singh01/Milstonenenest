@@ -44,3 +44,26 @@ The stats now update automatically when you:
    - Shows: 5 milestones
    - Note: This will be dynamic when milestone features are added
 
+## 🎯 Example
+
+If you have:
+- 2 tasks in "To Do"
+- 1 task in "In Progress"  
+- 0 tasks in "Done"
+
+The dashboard will show:
+- *Active Tasks*: 3 (with "2 to do")
+- *Completed*: 0 (with "1 in progress")
+
+## 💡 Next Steps
+
+Future enhancements could include:
+- Percentage change from previous week/month
+- Trend indicators (↑ ↓)
+- Task completion rate
+- Average time to complete
+- Team member activity tracking
+
+---
+
+*Your dashboard now reflects real-time data!* 📊
