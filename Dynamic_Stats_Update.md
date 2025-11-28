@@ -24,3 +24,23 @@ The stats now update automatically when you:
 - ✅ Delete a task
 - ✅ Edit a task's status
 
+## 📈 Stats Breakdown
+
+1. *Active Tasks*
+   - Counts: To Do + In Progress tasks
+   - Shows: Total number of tasks you're working on
+   - Change: Displays how many are in "To Do"
+
+2. *Completed*
+   - Counts: Done tasks
+   - Shows: Total number of finished tasks
+   - Change: Displays how many are "In Progress"
+
+3. *Team Members* (Still static)
+   - Shows: 8 members
+   - Note: This will be dynamic when team features are added
+
+4. *Milestones* (Still static)
+   - Shows: 5 milestones
+   - Note: This will be dynamic when milestone features are added
+
