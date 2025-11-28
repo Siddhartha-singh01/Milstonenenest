@@ -11,7 +11,7 @@ Complete backend system for Milestonenest project management application.
 - **Authentication**: JWT (JSON Web Tokens)
 - **File Upload**: Multer (local) + AWS S3 ready
 - **Validation**: express-validator
-- **Security**: helmet, cors, bcrypt
+- **Security**: helmet, cors, bcrypt                 
 - **Logging**: winston
 
 ## Project Structure
