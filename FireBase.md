@@ -7,7 +7,7 @@
 3. Follow the setup wizard to create your project
 
 ## Step 2: Enable Authentication Methods
-
+         
 1. In your Firebase project, go to **Build** → **Authentication**
 2. Click on the **Sign-in method** tab
 3. Enable the following providers:
