@@ -1,274 +1,112 @@
-# Milestonenest Backend
+# Milestonenest
 
-Complete backend system for Milestonenest project management application.
+Milestonenest is a comprehensive project management application designed to streamline team collaboration, task tracking, and milestone achievement. It combines a modern, interactive frontend with a robust, real-time backend to deliver a premium user experience.
 
-## Technology Stack
+## 🚀 Features
 
-- **Runtime**: Node.js 18+
+- **Project Management**: Create and manage multiple projects with ease.
+- **Task Tracking**: Kanban-style task boards with drag-and-drop functionality.
+- **Milestones**: Track major project goals and deadlines.
+- **Real-time Collaboration**: Instant updates on tasks and projects via Socket.io.
+- **Interactive UI**: 3D elements using Three.js and smooth animations with GSAP.
+- **Analytics**: Visual dashboards with Recharts for project insights.
+- **AI Integration**: AI-powered summaries and assistance (Gemini AI).
+- **File Management**: Upload and attach files to tasks (Local/S3).
+- **Authentication**: Secure user authentication with JWT and Firebase integration.
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Framework**: React 18+ (Vite)
+- **Styling**: TailwindCSS, GSAP
+- **3D Graphics**: Three.js, React Three Fiber
+- **State Management**: React Context / Hooks
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **Drag & Drop**: @dnd-kit
+
+### Backend
+- **Runtime**: Node.js
 - **Framework**: Express.js
-- **Database**: MongoDB with Mongoose ODM
-- **Real-time**: Socket.io for WebSocket
-- **Authentication**: JWT (JSON Web Tokens)
-- **File Upload**: Multer (local) + AWS S3 ready
-- **Validation**: express-validator
-- **Security**: helmet, cors, bcrypt
-- **Logging**: winston
+- **Database**: MongoDB (Mongoose)
+- **Real-time**: Socket.io
+- **Authentication**: JWT, BCrypt
+- **File Storage**: Multer (Local), AWS S3 (Optional)
 
-## Project Structure
+## 📋 Prerequisites
 
-```
-backend/
-├── src/
-│   ├── config/
-│   │   ├── database.js
-│   │   ├── socket.js
-│   │   └── storage.js
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── Project.js
-│   │   ├── Task.js
-│   │   ├── Milestone.js
-│   │   └── File.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── projectController.js
-│   │   ├── taskController.js
-│   │   ├── milestoneController.js
-│   │   ├── analyticsController.js
-│   │   └── fileController.js
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── projects.js
-│   │   ├── tasks.js
-│   │   ├── milestones.js
-│   │   ├── analytics.js
-│   │   └── files.js
-│   ├── middleware/
-│   │   ├── auth.js
-│   │   ├── validation.js
-│   │   ├── errorHandler.js
-│   │   └── upload.js
-│   ├── services/
-│   │   ├── authService.js
-│   │   ├── taskService.js
-│   │   ├── milestoneService.js
-│   │   └── fileService.js
-│   ├── utils/
-│   │   ├── logger.js
-│   │   └── helpers.js
-│   ├── socket/
-│   │   └── handlers.js
-│   └── server.js
-├── uploads/
-├── .env.example
-├── .gitignore
-├── package.json
-└── README.md
-```
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [MongoDB](https://www.mongodb.com/) (Local instance or Atlas URI)
+- [Git](https://git-scm.com/)
 
-## Quick Start
+## ⚡ Getting Started
+
+Follow these instructions to set up the project locally.
+
+### 1. Clone the Repository
 
 ```bash
-# Navigate to backend directory
+git clone <repository-url>
+cd Milstonenenest
+```
+
+### 2. Backend Setup
+
+Navigate to the backend directory and install dependencies:
+
+```bash
 cd backend
+npm install
+```
+
+**Configuration:**
+Create a `.env` file in the `backend` directory based on `.env.example`.
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/milestonenest
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
+```
+
+**Start the Backend Server:**
+
+```bash
+npm run dev
+```
+The backend server will start on `http://localhost:5000`.
+
+### 3. Frontend Setup
+
+Open a new terminal, navigate to the project root (if not already there), and install dependencies:
+
+```bash
+# If you are in the backend folder, go back to root
+cd ..
 
 # Install dependencies
 npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Edit .env with your configuration
-# Start MongoDB locally or use MongoDB Atlas
-
-# Run development server
-npm run dev
-
-# Run production server
-npm start
 ```
 
-## Environment Variables
+**Configuration:**
+Ensure you have the necessary environment variables in the root `.env` file (e.g., for Firebase or API URLs).
 
-```env
-# Server
-PORT=5000
-NODE_ENV=development
+**Start the Frontend Development Server:**
 
-# Database
-MONGODB_URI=mongodb://localhost:27017/milestonenest
-
-# JWT
-JWT_SECRET=your-super-secret-jwt-key-change-this
-JWT_EXPIRE=7d
-
-# CORS
-FRONTEND_URL=http://localhost:5173
-
-# File Upload
-UPLOAD_DIR=./uploads
-MAX_FILE_SIZE=10485760
-
-# AWS S3 (Optional)
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_BUCKET_NAME=milestonenest-files
-AWS_REGION=us-east-1
-USE_S3=false
-```
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/update` - Update user profile
-
-### Projects
-- `GET /api/projects` - Get all user projects
-- `POST /api/projects` - Create new project
-- `GET /api/projects/:id` - Get project by ID
-- `PUT /api/projects/:id` - Update project
-- `DELETE /api/projects/:id` - Delete project
-
-### Tasks
-- `GET /api/tasks` - Get all tasks (with filters)
-- `POST /api/tasks` - Create new task
-- `GET /api/tasks/:id` - Get task by ID
-- `PUT /api/tasks/:id` - Update task
-- `DELETE /api/tasks/:id` - Delete task
-- `PATCH /api/tasks/:id/status` - Update task status
-- `PATCH /api/tasks/:id/move` - Move task (Kanban)
-
-### Milestones
-- `GET /api/milestones` - Get all milestones
-- `POST /api/milestones` - Create new milestone
-- `GET /api/milestones/:id` - Get milestone by ID
-- `PUT /api/milestones/:id` - Update milestone
-- `DELETE /api/milestones/:id` - Delete milestone
-- `PATCH /api/milestones/:id/complete` - Mark milestone complete
-
-### Analytics
-- `GET /api/analytics/overview` - Get dashboard overview
-- `GET /api/analytics/tasks` - Get task analytics
-- `GET /api/analytics/milestones` - Get milestone analytics
-- `GET /api/analytics/velocity` - Get team velocity
-
-### Files
-- `POST /api/files/upload` - Upload file
-- `GET /api/files/:id` - Get file by ID
-- `DELETE /api/files/:id` - Delete file
-- `GET /api/files/task/:taskId` - Get files for task
-
-## WebSocket Events
-
-### Client → Server
-- `join:project` - Join project room
-- `leave:project` - Leave project room
-- `task:update` - Update task
-- `task:move` - Move task in Kanban
-- `milestone:update` - Update milestone
-
-### Server → Client
-- `task:created` - New task created
-- `task:updated` - Task updated
-- `task:deleted` - Task deleted
-- `task:moved` - Task moved
-- `milestone:created` - New milestone created
-- `milestone:updated` - Milestone updated
-- `milestone:deleted` - Milestone deleted
-- `user:joined` - User joined project
-- `user:left` - User left project
-
-## Features
-
-✅ JWT Authentication
-✅ Real-time updates via WebSocket
-✅ File uploads (local + S3 ready)
-✅ Auto-save support
-✅ Multi-user collaboration
-✅ Full CRUD operations
-✅ Request validation
-✅ Error handling
-✅ Logging & monitoring
-✅ CORS enabled
-✅ Security headers
-✅ Rate limiting
-✅ Database indexing
-
-## Database Models
-
-### User
-- email, password, name, avatar
-- projects (references)
-- createdAt, updatedAt
-
-### Project
-- name, description, color
-- owner (User reference)
-- members (User references)
-- createdAt, updatedAt
-
-### Task
-- title, description, status, priority
-- project (Project reference)
-- assignee (User reference)
-- dueDate, tags, position
-- createdAt, updatedAt
-
-### Milestone
-- title, description, status
-- project (Project reference)
-- dueDate, progress, tasks
-- createdAt, updatedAt
-
-### File
-- filename, originalName, mimetype, size
-- path, url
-- task (Task reference)
-- uploadedBy (User reference)
-- createdAt
-
-## Security Features
-
-- Password hashing with bcrypt
-- JWT token authentication
-- HTTP security headers (helmet)
-- CORS configuration
-- Request validation
-- Rate limiting
-- File upload restrictions
-- XSS protection
-
-## Deployment
-
-### Development
 ```bash
 npm run dev
 ```
+The frontend application will be available at `http://localhost:5173`.
 
-### Production
-```bash
-npm start
-```
+## 🔗 API Documentation
 
-### Docker (Optional)
-```bash
-docker-compose up -d
-```
+For detailed information about the Backend API endpoints, WebSocket events, and database models, please refer to the [Backend README](./backend/README.md).
 
-## Testing
+## 🤝 Contributing
 
-```bash
-# Run tests
-npm test
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-# Run tests with coverage
-npm run test:coverage
-```
+## 📄 License
 
-## License
-
-MIT
+This project is licensed under the MIT License.
