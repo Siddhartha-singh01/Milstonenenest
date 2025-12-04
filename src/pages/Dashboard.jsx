@@ -198,7 +198,7 @@ const Dashboard = () => {
                             </p>
                         </div>
                         <button
-                            onClick={() => setIsTaskModalOpen(true)}
+                            onClick={() => setIsTaskModalOpen(!isTaskModalOpen)}
                             style={{
                                 padding: '0.875rem 1.5rem',
                                 borderRadius: '12px',
@@ -488,9 +488,11 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {isTaskModalOpen && (
-                <TaskModal onClose={handleCloseModal} taskToEdit={taskToEdit} />
-            )}
+            {isTaskModalOpen &&
+                (
+                    <TaskModal onClose={handleCloseModal} taskToEdit={taskToEdit} />
+                )
+            }
         </div>
     );
 };
