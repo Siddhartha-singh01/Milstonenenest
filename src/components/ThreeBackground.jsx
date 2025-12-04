@@ -54,7 +54,7 @@ const ThreeBackground = () => {
                 <Geometry position={[3, -2, -2]} />
                 <Geometry position={[0, 0, -5]} scale={2} />
                 <Environment preset="city" />
-            </Canvas>
+            </Canvas> 
         </div>
     );
 };
