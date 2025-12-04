@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Tasks from './pages/Tasks';
 import Milestones from './pages/Milestones';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard';  //main
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import LandingPage from './pages/LandingPage';
