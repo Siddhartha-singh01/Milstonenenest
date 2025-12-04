@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TestimonialsSection } from '@/components/blocks/testimonials-with-marquee';
 import Hero3D from '@/components/Hero3D';
 import KanbanDemo from '@/components/KanbanDemo';
+import useResponsive from '../hooks/useResponsive';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,7 @@ const LandingPage = () => {
     const [progress, setProgress] = useState(0);
     const heroRef = useRef(null);
     const sectionsRef = useRef([]);
+    const { isMobile, isTablet } = useResponsive();
 
     useEffect(() => {
         const updateProgress = () => {
@@ -24,52 +26,58 @@ const LandingPage = () => {
 
         window.addEventListener('scroll', updateProgress);
 
-        // Hero Animation - Subtle fade out and move up
-        const heroCtx = gsap.context(() => {
-            gsap.to(heroRef.current, {
-                scrollTrigger: {
-                    trigger: heroRef.current,
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: true
-                },
-                y: -50,
-                opacity: 0,
-                ease: "power1.out"
+        // Hero Animation - Subtle fade out and move up (Only on desktop/tablet for performance)
+        let heroCtx;
+        if (!isMobile) {
+            heroCtx = gsap.context(() => {
+                gsap.to(heroRef.current, {
+                    scrollTrigger: {
+                        trigger: heroRef.current,
+                        start: "top top",
+                        end: "bottom top",
+                        scrub: true
+                    },
+                    y: -50,
+                    opacity: 0,
+                    ease: "power1.out"
+                });
             });
-        });
+        }
 
         // Sections Entry Animation - Smooth slide up and fade in
+        // On mobile, we skip the initial opacity: 0 to ensure content is always visible
         const sectionsCtx = gsap.context(() => {
-            sectionsRef.current.forEach((section) => {
-                if (!section) return;
+            if (!isMobile) {
+                sectionsRef.current.forEach((section) => {
+                    if (!section) return;
 
-                // Animate IN
-                gsap.fromTo(section.children,
-                    { y: 50, opacity: 0 },
-                    {
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top 85%",
-                            end: "top 50%",
-                            toggleActions: "play none none none"
-                        },
-                        y: 0,
-                        opacity: 1,
-                        stagger: 0.1,
-                        duration: 1,
-                        ease: "power3.out"
-                    }
-                );
-            });
+                    // Animate IN
+                    gsap.fromTo(section.children,
+                        { y: 50, opacity: 0 },
+                        {
+                            scrollTrigger: {
+                                trigger: section,
+                                start: "top 85%",
+                                end: "top 50%",
+                                toggleActions: "play none none none"
+                            },
+                            y: 0,
+                            opacity: 1,
+                            stagger: 0.1,
+                            duration: 1,
+                            ease: "power3.out"
+                        }
+                    );
+                });
+            }
         });
 
         return () => {
             window.removeEventListener('scroll', updateProgress);
-            heroCtx.revert();
+            if (heroCtx) heroCtx.revert();
             sectionsCtx.revert();
         };
-    }, []);
+    }, [isMobile]);
 
     const addToRefs = (el) => {
         if (el && !sectionsRef.current.includes(el)) {
@@ -103,7 +111,7 @@ const LandingPage = () => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '2rem 5%',
+                padding: isMobile ? '1.5rem 5%' : '2rem 5%',
                 maxWidth: '1400px',
                 margin: '0 auto',
                 position: 'relative',
@@ -112,18 +120,19 @@ const LandingPage = () => {
                 <div style={{ fontSize: '1.25rem', fontWeight: '600', letterSpacing: '-0.03em' }}>
                     Milestonenest.
                 </div>
-                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: isMobile ? '1rem' : '2rem', alignItems: 'center' }}>
                     <Link to="/login" style={{
                         color: '#525252',
                         textDecoration: 'none',
                         fontWeight: 500,
                         fontSize: '0.95rem',
-                        transition: 'color 0.2s'
+                        transition: 'color 0.2s',
+                        display: isMobile ? 'none' : 'block'
                     }}>
                         Log In
                     </Link>
                     <Link to="/login" style={{
-                        padding: '0.75rem 1.5rem',
+                        padding: isMobile ? '0.5rem 1rem' : '0.75rem 1.5rem',
                         borderRadius: '999px',
                         backgroundColor: '#171717',
                         color: 'white',
@@ -140,10 +149,10 @@ const LandingPage = () => {
 
             {/* Hero Section */}
             <header ref={heroRef} style={{
-                padding: '8rem 5% 6rem',
+                padding: isMobile ? '4rem 5% 3rem' : '8rem 5% 6rem',
                 textAlign: 'center',
                 position: 'relative',
-                minHeight: '90vh',
+                minHeight: isMobile ? 'auto' : '90vh',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -153,7 +162,7 @@ const LandingPage = () => {
 
                 <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
                     <h1 style={{
-                        fontSize: 'clamp(3rem, 8vw, 5.5rem)',
+                        fontSize: 'clamp(2.5rem, 8vw, 5.5rem)',
                         fontWeight: '800',
                         lineHeight: 1.05,
                         letterSpacing: '-0.04em',
@@ -164,7 +173,7 @@ const LandingPage = () => {
                         <span style={{ color: '#737373' }}>chaotic workflow.</span>
                     </h1>
                     <p style={{
-                        fontSize: 'clamp(1.125rem, 2vw, 1.5rem)',
+                        fontSize: 'clamp(1rem, 2vw, 1.5rem)',
                         color: '#525252',
                         marginBottom: '3rem',
                         maxWidth: '600px',
@@ -176,13 +185,13 @@ const LandingPage = () => {
                     </p>
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', alignItems: 'center' }}>
                         <Link to="/login" style={{
-                            padding: '1.25rem 2.5rem',
+                            padding: isMobile ? '1rem 2rem' : '1.25rem 2.5rem',
                             borderRadius: '999px',
                             backgroundColor: '#171717',
                             color: 'white',
                             textDecoration: 'none',
                             fontWeight: 600,
-                            fontSize: '1.125rem',
+                            fontSize: isMobile ? '1rem' : '1.125rem',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.5rem',
@@ -193,22 +202,24 @@ const LandingPage = () => {
                     </div>
                 </div>
 
-                <div style={{
-                    marginTop: 'auto',
-                    paddingTop: '4rem',
-                    opacity: 0.5,
-                    animation: 'bounce 2s infinite',
-                    position: 'relative',
-                    zIndex: 10
-                }}>
-                    <ArrowDown size={24} />
-                </div>
+                {!isMobile && (
+                    <div style={{
+                        marginTop: 'auto',
+                        paddingTop: '4rem',
+                        opacity: 0.5,
+                        animation: 'bounce 2s infinite',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <ArrowDown size={24} />
+                    </div>
+                )}
             </header>
 
             {/* Features Section - Bento Grid Style */}
-            <section ref={addToRefs} style={{ padding: '8rem 5%', backgroundColor: '#F5F5F5' }}>
+            <section ref={addToRefs} style={{ padding: isMobile ? '4rem 5%' : '8rem 5%', backgroundColor: '#F5F5F5' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <div style={{ marginBottom: '6rem' }}>
+                    <div style={{ marginBottom: isMobile ? '3rem' : '6rem' }}>
                         <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: '700', letterSpacing: '-0.03em', marginBottom: '1rem' }}>
                             Designed for focus.
                         </h2>
@@ -219,15 +230,15 @@ const LandingPage = () => {
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                        gap: '2rem',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                        gap: isMobile ? '1.5rem' : '2rem',
                         autoRows: 'minmax(300px, auto)'
                     }}>
                         {/* Kanban Feature - Interactive Demo */}
                         <div style={{
                             gridColumn: '1 / -1',
                             backgroundColor: 'white',
-                            padding: '3rem',
+                            padding: isMobile ? '1.5rem' : '3rem',
                             borderRadius: '2rem',
                             boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
                             display: 'flex',
@@ -250,7 +261,7 @@ const LandingPage = () => {
                             <div style={{
                                 backgroundColor: '#171717',
                                 color: 'white',
-                                padding: '3rem',
+                                padding: isMobile ? '2rem' : '3rem',
                                 borderRadius: '2rem',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -260,12 +271,16 @@ const LandingPage = () => {
                                 height: '100%'
                             }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-4px)';
-                                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)';
+                                    }
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }
                                 }}>
                                 <div>
                                     <h3 style={{ fontSize: '2rem', fontWeight: '600', marginBottom: '1rem', letterSpacing: '-0.02em' }}>Milestones</h3>
@@ -284,7 +299,7 @@ const LandingPage = () => {
                         <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
                             <div style={{
                                 backgroundColor: 'white',
-                                padding: '3rem',
+                                padding: isMobile ? '2rem' : '3rem',
                                 borderRadius: '2rem',
                                 boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
                                 cursor: 'pointer',
@@ -292,12 +307,16 @@ const LandingPage = () => {
                                 height: '100%'
                             }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-4px)';
-                                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.08)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.08)';
+                                    }
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.02)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.02)';
+                                    }
                                 }}>
                                 <div style={{ width: '50px', height: '50px', backgroundColor: '#F5F5F5', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
                                     <Star size={24} color="#171717" />
@@ -313,7 +332,7 @@ const LandingPage = () => {
                         <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
                             <div style={{
                                 backgroundColor: 'white',
-                                padding: '3rem',
+                                padding: isMobile ? '2rem' : '3rem',
                                 borderRadius: '2rem',
                                 boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
                                 cursor: 'pointer',
@@ -321,12 +340,16 @@ const LandingPage = () => {
                                 height: '100%'
                             }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-4px)';
-                                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.08)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.08)';
+                                    }
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.02)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.02)';
+                                    }
                                 }}>
                                 <div style={{ width: '50px', height: '50px', backgroundColor: '#F5F5F5', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
                                     <ArrowRight size={24} color="#171717" />
@@ -388,7 +411,7 @@ const LandingPage = () => {
             </div>
 
             {/* CTA Section */}
-            <section ref={addToRefs} style={{ padding: '8rem 5%', textAlign: 'center', backgroundColor: '#171717', color: 'white' }}>
+            <section ref={addToRefs} style={{ padding: isMobile ? '4rem 5%' : '8rem 5%', textAlign: 'center', backgroundColor: '#171717', color: 'white' }}>
                 <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                     <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: '800', marginBottom: '2rem', letterSpacing: '-0.04em' }}>
                         Ready to find your flow?

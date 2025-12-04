@@ -17,6 +17,7 @@ import ThreeBackground from '../components/ThreeBackground';
 import { useProject } from '../context/ProjectContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import useResponsive from '../hooks/useResponsive';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Dashboard = () => {
     const { tasks } = useProject();
     const { isDarkMode } = useTheme();
     const { user } = useAuth();
+    const { isMobile } = useResponsive();
 
     // Calculate dynamic stats from tasks
     const activeTasks = tasks.filter(t => t.status === 'todo' || t.status === 'in-progress');
@@ -170,7 +172,7 @@ const Dashboard = () => {
         <div style={{
             backgroundColor: isDarkMode ? '#171717' : '#FAFAFA',
             minHeight: '100vh',
-            padding: '2rem 5%',
+            padding: isMobile ? '1rem 3%' : '2rem 5%',
             fontFamily: '"Inter", "Helvetica Neue", sans-serif',
             position: 'relative',
             transition: 'background-color 0.3s ease'
@@ -285,13 +287,13 @@ const Dashboard = () => {
                 {/* Main Content Grid */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(12, 1fr)',
+                    gridTemplateColumns: isMobile ? '1fr' : 'repeat(12, 1fr)',
                     gap: '2rem',
                     marginBottom: '3rem'
                 }}>
                     {/* Kanban Board - Full Width */}
                     <div ref={addToRefs} style={{
-                        gridColumn: '1 / -1',
+                        gridColumn: isMobile ? '1 / -1' : '1 / -1',
                         backgroundColor: isDarkMode ? '#262626' : 'white',
                         padding: '2.5rem',
                         borderRadius: '20px',
@@ -334,7 +336,7 @@ const Dashboard = () => {
 
                     {/* Milestones */}
                     <div ref={addToRefs} style={{
-                        gridColumn: 'span 12',
+                        gridColumn: isMobile ? '1 / -1' : 'span 12',
                         backgroundColor: isDarkMode ? '#262626' : 'white',
                         padding: '2.5rem',
                         borderRadius: '20px',

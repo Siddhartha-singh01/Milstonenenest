@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import Auth3D from '../components/Auth3D';
+import useResponsive from '../hooks/useResponsive';
 
 const Login = () => {
     const [mode, setMode] = useState('login'); // 'login' or 'signup'
@@ -19,6 +20,8 @@ const Login = () => {
     const [captchaQuestion, setCaptchaQuestion] = useState('');
     const [captchaAnswer, setCaptchaAnswer] = useState(0);
     const [captchaInput, setCaptchaInput] = useState('');
+
+    const { isMobile } = useResponsive();
 
     const generateCaptcha = () => {
         const num1 = Math.floor(Math.random() * 10) + 1;
@@ -160,7 +163,7 @@ const Login = () => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '2rem 5%',
+                padding: isMobile ? '1.5rem 5%' : '2rem 5%',
                 maxWidth: '1400px',
                 margin: '0 auto',
                 position: 'relative',
@@ -180,7 +183,7 @@ const Login = () => {
                     transition: 'color 0.2s'
                 }}>
                     <ArrowLeft size={18} />
-                    Back to Home
+                    {isMobile ? 'Back' : 'Back to Home'}
                 </Link>
             </nav>
 
@@ -193,7 +196,7 @@ const Login = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: 'calc(100vh - 100px)',
-                padding: '2rem 5%',
+                padding: isMobile ? '1rem 5% 2rem' : '2rem 5%',
                 position: 'relative',
                 zIndex: 5
             }}>
@@ -202,8 +205,8 @@ const Login = () => {
                     maxWidth: '440px',
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     backdropFilter: 'blur(10px)',
-                    borderRadius: '2rem',
-                    padding: '3rem 2.5rem',
+                    borderRadius: isMobile ? '1.5rem' : '2rem',
+                    padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                     boxShadow: '0 20px 60px rgba(0, 0, 0, 0.08)',
                     border: '1px solid rgba(0, 0, 0, 0.05)',
                     position: 'relative'

@@ -4,11 +4,13 @@ import { arrayMove } from '@dnd-kit/sortable';
 import TaskColumn from './TaskColumn';
 import TaskCard from './TaskCard';
 import { useProject } from '../context/ProjectContext';
+import useResponsive from '../hooks/useResponsive';
 
 const TaskBoard = ({ onEditTask, tasks: propTasks }) => {
     const { tasks: contextTasks, updateTask } = useProject();
     const tasks = propTasks || contextTasks;
     const [activeId, setActiveId] = useState(null);
+    const { isMobile } = useResponsive();
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -80,19 +82,24 @@ const TaskBoard = ({ onEditTask, tasks: propTasks }) => {
         >
             <div style={{
                 display: 'flex',
-                gap: '1.5rem',
+                gap: isMobile ? '1rem' : '1.5rem',
                 height: 'calc(100vh - 150px)',
                 overflowX: 'auto',
-                paddingBottom: '1rem'
+                paddingBottom: '1rem',
+                scrollSnapType: isMobile ? 'x mandatory' : 'none'
             }}>
                 {columns.map(col => (
-                    <TaskColumn
-                        key={col.id}
-                        id={col.id}
-                        title={col.title}
-                        tasks={getTasksByStatus(col.id)}
-                        onEditTask={onEditTask}
-                    />
+                    <div key={col.id} style={{
+                        minWidth: isMobile ? '85vw' : '350px',
+                        scrollSnapAlign: isMobile ? 'center' : 'none'
+                    }}>
+                        <TaskColumn
+                            id={col.id}
+                            title={col.title}
+                            tasks={getTasksByStatus(col.id)}
+                            onEditTask={onEditTask}
+                        />
+                    </div>
                 ))}
             </div>
 
