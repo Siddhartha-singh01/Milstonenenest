@@ -1,3 +1,4 @@
+//LandingPage-> Kanban->(To do,progress, Done) It uses the Framer Motion library's drag features.
 import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
