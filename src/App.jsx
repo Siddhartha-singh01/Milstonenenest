@@ -59,7 +59,7 @@ function App() {
             } />
             <Route path="/activity/:id" element={
               <ProtectedRoute>
-                <ActivityDetail />
+                <ActivityDetail />   
               </ProtectedRoute>
             } />
           </Routes>
