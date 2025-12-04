@@ -8,7 +8,7 @@
 - Smooth hover animations
 
 ### 2. **AI Summary Modal**
-- Full-screen modal with blur backdrop
+- Full-screen modal with blur backdrop      
 - Gemini AI powered analysis
 - Beautiful animations:
   - Fade-in entrance

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useProject } from '../context/ProjectContext';
 import { useTheme } from '../context/ThemeContext';
-
+//Add task -> details
 const TaskModal = ({ onClose, taskToEdit = null }) => {
     const { addTask, updateTask, deleteTask, tasks } = useProject();
     const { isDarkMode } = useTheme();

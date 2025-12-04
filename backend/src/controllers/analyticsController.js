@@ -9,7 +9,7 @@ const getOverview = async (req, res) => {
         const { projectId } = req.query;
 
         // Build query based on user's projects
-        const projectQuery = projectId
+        const projectQuery = projectId       
             ? { _id: projectId }
             : { $or: [{ owner: req.user.id }, { members: req.user.id }] };
 

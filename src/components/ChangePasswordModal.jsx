@@ -13,7 +13,7 @@ const ChangePasswordModal = ({ onClose }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');
-        setSuccess('');
+        setSuccess(''); 
 
         if (!currentPassword || !newPassword || !confirmPassword) {
             setError('All fields are required');

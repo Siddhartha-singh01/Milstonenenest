@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, PerspectiveCamera, Environment, MeshDistortMaterial } from '@react-three/drei';
-
+//1st 3d element
 const FloatingTorus = () => {
     const torusRef = useRef();
 
