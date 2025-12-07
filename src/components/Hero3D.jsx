@@ -1,9 +1,11 @@
 import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, PerspectiveCamera, Environment, MeshDistortMaterial } from '@react-three/drei';
-//dashboard element
+
 const GeometricShape = () => {
     const meshRef = useRef();
+    const { viewport } = useThree();
+    const isMobile = viewport.width < 5; // Rough approximation for 3D viewport on mobile
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
@@ -15,7 +17,7 @@ const GeometricShape = () => {
 
     return (
         <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-            <mesh ref={meshRef} scale={1.5}>
+            <mesh ref={meshRef} scale={isMobile ? 1 : 1.5}>
                 <icosahedronGeometry args={[1, 0]} />
                 <MeshDistortMaterial
                     color="#171717"
@@ -39,7 +41,7 @@ const Hero3D = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            zIndex: -1,
+            zIndex: 0, // Changed to 0 to be visible on top of background but below content
             opacity: 0.6,
             pointerEvents: 'none'
         }}>

@@ -287,7 +287,7 @@ const Dashboard = () => {
                 {/* Main Content Grid */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: isMobile ? '1fr' : 'repeat(12, 1fr)',
+                    gridTemplateColumns: isMobile ? '100%' : 'repeat(12, 1fr)',
                     gap: '2rem',
                     marginBottom: '3rem'
                 }}>
@@ -336,7 +336,7 @@ const Dashboard = () => {
 
                     {/* Milestones */}
                     <div ref={addToRefs} style={{
-                        gridColumn: isMobile ? '1 / -1' : 'span 12',
+                        gridColumn: '1 / -1',
                         backgroundColor: isDarkMode ? '#262626' : 'white',
                         padding: '2.5rem',
                         borderRadius: '20px',
@@ -430,7 +430,7 @@ const Dashboard = () => {
 
                     {/* Recent Activity */}
                     <div ref={addToRefs} style={{
-                        gridColumn: 'span 12',
+                        gridColumn: '1 / -1',
                         backgroundColor: isDarkMode ? '#262626' : 'white',
                         padding: '2.5rem',
                         borderRadius: '20px',
