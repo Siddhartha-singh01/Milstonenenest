@@ -64,6 +64,7 @@ npm install
 Create a `.env` file in the `backend` directory based on `.env.example`.
 
 ```env
+https://milestonenest.in/
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/milestonenest
 JWT_SECRET=your_jwt_secret
