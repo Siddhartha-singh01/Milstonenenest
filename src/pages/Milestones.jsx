@@ -10,7 +10,7 @@ const Milestones = () => {
     const [milestoneToEdit, setMilestoneToEdit] = useState(null);
     const { isDarkMode } = useTheme();
 
-    const handleEdit = (milestone) => {
+    const handleEdit = (milestone) => { 
         setMilestoneToEdit(milestone);
         setIsModalOpen(true);
     };
@@ -51,7 +51,7 @@ const Milestones = () => {
                             cursor: 'pointer'
                         }}
                     >
-                        <Plus size={20} />
+                        <Plus size={20} /> 
                         New Milestone
                     </button>
                 </div>
