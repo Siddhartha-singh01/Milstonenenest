@@ -14,7 +14,7 @@ const useResponsive = () => {
             });
         };
 
-        window.addEventListener('resize', handleResize);
+        window.addEventListener('resize', handleResize); //fix the size of the 3d elements in the mobile phone 
 
         // Call handler right away so state gets updated with initial window size
         handleResize();
