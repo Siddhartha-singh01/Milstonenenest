@@ -10,7 +10,7 @@ Complete backend system for Milestonenest project management application.
 - **Real-time**: Socket.io for WebSocket
 - **Authentication**: JWT (JSON Web Tokens)
 - **File Upload**: Multer (local) + AWS S3 ready
-- **Validation**: express-validator
+- **Validation**: express-validator        
 - **Security**: helmet, cors, bcrypt
 - **Logging**: winston
 
