@@ -10,7 +10,7 @@ import {
     Plus,
     ArrowRight
 } from 'lucide-react';
-import gsap from 'gsap';
+import gsap from 'gsap';                    
 import TaskBoard from '../components/TaskBoard';
 import TaskModal from '../components/TaskModal';
 import ThreeBackground from '../components/ThreeBackground';
