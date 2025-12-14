@@ -9,7 +9,7 @@ import Settings from './pages/Settings';
 import LandingPage from './pages/LandingPage';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
-import TeamMembers from './pages/TeamMembers';
+import TeamMembers from './pages/TeamMembers';                                           
 import ActivityDetail from './pages/ActivityDetail';
 
 const ProtectedRoute = ({ children }) => {
