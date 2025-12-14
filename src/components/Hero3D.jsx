@@ -5,10 +5,10 @@ import { Float, PerspectiveCamera, Environment, MeshDistortMaterial } from '@rea
 const GeometricShape = () => {
     const meshRef = useRef();
     const { viewport } = useThree();
-    const isMobile = viewport.width < 5; // Rough approximation for 3D viewport on mobile
+    const isMobile = viewport.width < 5; // Rough approximation for 3D viewport on mobile..
 
     useFrame((state) => {
-        const t = state.clock.getElapsedTime();
+        const t = state.clock.getElapsedTime();                                 
         if (meshRef.current) {
             meshRef.current.rotation.x = t * 0.2;
             meshRef.current.rotation.y = t * 0.3;
