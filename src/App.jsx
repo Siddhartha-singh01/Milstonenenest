@@ -52,7 +52,7 @@ function App() {
                 <Settings />
               </ProtectedRoute>
             } />
-            <Route path="/team-members" element={
+            <Route path="/team-members" element={ 
               <ProtectedRoute>
                 <TeamMembers />
               </ProtectedRoute>
