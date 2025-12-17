@@ -9,7 +9,7 @@ export const useProject = () => {
     }
     return context;
 };
-
+                      
 export const ProjectProvider = ({ children }) => {
     // Initial mock data
     const [tasks, setTasks] = useState(() => {
