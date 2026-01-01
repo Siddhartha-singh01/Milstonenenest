@@ -8,7 +8,7 @@ exports.sendNotification = async (req, res) => {
         if (!message || !recipientEmail) {
             return res.status(400).json({ error: 'Message and recipient email are required' });
         }
-
+                                                                             
         // Construct email content
         const emailSubject = subject || 'New Notification from MilestoneNest';
         const emailText = `You have a new notification:\n\n${message}`;
