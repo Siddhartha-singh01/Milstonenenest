@@ -9,7 +9,7 @@ const logger = require('../utils/logger');
  * @access  Public
  */
 const register = async (req, res) => {
-    try {
+    try {        
         const { name, email, password } = req.body;
 
         // Check if user exists
