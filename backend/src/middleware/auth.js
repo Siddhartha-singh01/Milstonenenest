@@ -6,7 +6,7 @@ const { formatError } = require('../utils/helpers');
  * Protect routes - verify JWT token
  */
 const protect = async (req, res, next) => {
-    let token;
+    let token;     
 
     // Check for token in Authorization header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
