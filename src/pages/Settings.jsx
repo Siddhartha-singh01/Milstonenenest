@@ -4,7 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 import { User, Moon, Sun, Bell, Shield } from 'lucide-react';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 
-const Settings = () => {
+const Settings = () => {                                                                                                 
     const { user } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
     const [notifications, setNotifications] = useState(true);
