@@ -13,7 +13,7 @@ const Settings = () => {
     const Section = ({ title, icon: Icon, children }) => (
         <div style={{
             backgroundColor: isDarkMode ? '#262626' : 'white',
-            borderRadius: '16px',
+            borderRadius: '16px',                     
             border: isDarkMode ? '1px solid #404040' : '1px solid #E5E5E5',
             padding: '1.5rem',
             marginBottom: '1.5rem',
