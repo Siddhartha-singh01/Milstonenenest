@@ -34,4 +34,4 @@ const useResponsive = () => {
     };
 };
 
-export default useResponsive;
+export default useResponsive;                                                                                                                         
