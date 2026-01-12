@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 const connectDB = require('./config/database');
-const { initializeSocket } = require('./config/socket');
+const { initializeSocket } = require('./config/socket');                                                           
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
