@@ -32,7 +32,7 @@
 1. Visit: https://makersuite.google.com/app/apikey
 2. Sign in with Google
 3. Click "Create API Key"
-4. Copy the generated key
+4. Copy the generated key                                   
 
 ### Step 2: Configure Environment
 1. Create `.env` file in project root:
