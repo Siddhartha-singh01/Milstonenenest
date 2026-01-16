@@ -11,7 +11,7 @@ const ActivityDetail = () => {
 
     if (!activity) {
         return (
-            <div style={{
+            <div style={{                                                         
                 backgroundColor: isDarkMode ? '#171717' : '#FAFAFA',
                 minHeight: '100vh',
                 display: 'flex',
