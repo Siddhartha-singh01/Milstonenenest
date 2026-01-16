@@ -53,7 +53,7 @@ const LandingPage = () => {
 
                     // Animate IN
                     gsap.fromTo(section.children,
-                        { y: 50, opacity: 0 },
+                        { y: 50, opacity: 0 },                                           
                         {
                             scrollTrigger: {
                                 trigger: section,
