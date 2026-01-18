@@ -13,7 +13,7 @@ import TeamMembers from './pages/TeamMembers';
 import ActivityDetail from './pages/ActivityDetail';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();                          
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
