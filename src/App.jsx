@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Settings from './pages/Settings';
 import LandingPage from './pages/LandingPage';
 import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
+import Terms from './pages/Terms';                                                        
 import TeamMembers from './pages/TeamMembers';                                           
 import ActivityDetail from './pages/ActivityDetail';
 
