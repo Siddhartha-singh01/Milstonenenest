@@ -8,7 +8,7 @@
    - Made `password` field optional (for Google Auth users)
    - Added `googleId` field with unique constraint
 
-2. **Auth Routes** (`backend/src/routes/auth.js`)
+2. **Auth Routes** (`backend/src/routes/auth.js`)                                   
    - Added `/sync` endpoint for Firebase user synchronization
 
 3. **Auth Controller** (`backend/src/controllers/authController.js`)
