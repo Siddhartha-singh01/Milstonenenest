@@ -7,7 +7,7 @@
 - Beautiful purple gradient design with sparkles icon
 - Smooth hover animations
 
-### 2. **AI Summary Modal**
+### 2. **AI Summary Modal**                             
 - Full-screen modal with blur backdrop      
 - Gemini AI powered analysis
 - Beautiful animations:
