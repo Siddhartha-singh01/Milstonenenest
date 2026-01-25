@@ -43,7 +43,7 @@ Before you begin, ensure you have the following installed:
 ## ⚡ Getting Started
 
 Follow these instructions to set up the project locally.
-
+                                                                
 ### 1. Clone the Repository
 
 ```bash
