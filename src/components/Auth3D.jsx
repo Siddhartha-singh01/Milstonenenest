@@ -11,8 +11,7 @@ const FloatingTorus = () => {
             torusRef.current.rotation.x = t * 0.15;
             torusRef.current.rotation.y = t * 0.25;
             torusRef.current.rotation.z = t * 0.1;
-        }
-    });
+        }                                    
 
     return (
         <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.4}>
